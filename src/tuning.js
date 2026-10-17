@@ -65,6 +65,7 @@ export const player = {
   hungerMax: 100,
   thirstMax: 100,
   hungerDrainSeconds: 1080, // seconds from full to empty
+  fullAt: 90, // hunger at or above this is full: food is refused ("You are full.", Michael, 2026-10-18, #186); hunger drains all the time, so "full" is a margin, not the exact top
   thirstDrainSeconds: 720,
   // Tiredness and sleep (docs/30 step 2), regeneration, and the needs' hold on stamina.
   tiredMax: 100,

@@ -52,6 +52,7 @@
     "hungerMax": 100,
     "thirstMax": 100,
     "hungerDrainSeconds": 1080,
+    "fullAt": 90,
     "thirstDrainSeconds": 720,
     "starveDamage": 1.5,
     "dehydrateDamage": 2,

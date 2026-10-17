@@ -79,11 +79,26 @@ export function aimOrigin(player) {
 
 // ---- needs ----
 
+// Appetite bounds food (Michael, 2026-10-18, #186): with hunger at `fullAt` or more a body eats nothing, so food's heal is a stopgap and never a way to
+// top up. With the Survival setting off the needs stay full for good (updateNeeds), so a body is always full and eats nothing (Michael's
+// word read literally, Primary's call on #186; health still regenerates there, 2026-10-15).
+export function isFull(player) {
+  return !rules.survival || player.hunger >= T.fullAt;
+}
+
+// Eats one of `def`; false (and nothing changes) for the dead and for a full belly. The caller says why (interact.eatOne).
 export function eat(player, def) {
+  if (player.dead || !(player.hp > 0)) return false; // the dead eat nothing
+  if (isFull(player)) return false;
   player.presentFor = T.presentTime; // the held-out pose while it goes down (docs/32, item 1)
-  player.hunger = Math.min(player.maxHunger, player.hunger + (def.hunger || 0));
+  // The heal is bounded by the appetite the food fills (Primary's reading of Michael's "bounded by appetite", #186): a food that fills
+  // all it offers heals all of its number; at 89 of 100 a stew that offers 50 fills 11 of them and heals a fifth of its ten.
+  const offered = def.hunger || 0;
+  const fills = offered > 0 ? Math.min(1, Math.max(0, (player.maxHunger - player.hunger) / offered)) : 1;
+  player.hunger = Math.min(player.maxHunger, player.hunger + offered);
   player.thirst = Math.min(player.maxThirst, player.thirst + (def.thirst || 0));
-  player.hp = Math.min(player.maxHp, player.hp + (def.heal || 0));
+  player.hp = Math.min(player.maxHp, player.hp + (def.heal || 0) * fills);
+  return true;
 }
 
 // A sip from a waterskin entry: up to T.drinkSip of its fill.

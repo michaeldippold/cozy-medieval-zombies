@@ -42,7 +42,7 @@ Four stages each as now (`moodles.js`), with effects in the last two: at "very h
 
 ### 3.4 Health
 
-Regenerates [1 a minute] while hunger and thirst are above their second stage and nothing bleeds; [4 a minute] asleep; none otherwise. Bandages close bleeds as now. Food does not heal directly any more [it does not]. The infection stays the marker it is; when it is made real a craftable cure with the mushrooms joins the cauldron's recipes (section 8).
+Regenerates [1 a minute] while hunger and thirst are above their second stage and nothing bleeds; [4 a minute] asleep; none otherwise. Bandages close bleeds as now. **Food heals a little** (Michael, 2026-10-18, #179: "I DO want food to heal. It should be a stopgap while you wait for natural heal or grab a potion. The only big heals allowed are from potions"): each food has a `heal` in `data/items.json` beside its hunger, 1 to 2 raw (a potato, a cabbage, an apple, a pumpkin), 4 to 6 cooked (a roast potato, cheese, bread, porridge), 10 for a stew, and none heals as much as a potion will; **a full belly eats nothing** (Michael, 2026-10-18, #186: "you can't eat when your hunger is full"; "You are full."): hunger at or above `fullAt` (90) refuses the food by every way of eating it, the Survival-off world's needs being full for good, and a food heals in proportion to the appetite it fills, so food is never a way to top up; eaten from the bag or from the belt (a food on the belt offers Eat and a double-click eats it, as a skin is drunk). The infection stays the marker it is; when it is made real a craftable cure with the mushrooms joins the cauldron's recipes (section 8).
 
 ### 3.5 Death
 

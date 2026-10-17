@@ -25,7 +25,7 @@ import { getDef } from "./assets.js";
 import { canPutDown, putDownTarget, canCarry, propRect } from "./placement.js";
 import * as placement from "./placement.js";
 import * as grid from "./grid.js";
-import { autoWalk, eat, drink } from "./entities/player.js";
+import { autoWalk, eat, drink, isFull } from "./entities/player.js";
 import { showMessage } from "./ui/prompt.js";
 import { pokeVillager } from "./entities/villager.js";
 import { lootOf } from "./entities/character.js";
@@ -1018,15 +1018,23 @@ function toggleTorch(player) {
   showMessage("You take the torch in hand. T lights it.");
 }
 
+// Eat one of a food entry (the bag's menu, the belt's menu and its key all come here; a guest's reach it as the host's command, so the
+// word below reaches it through the acting player). Refused with a word when the belly is full (#186); true when one was eaten.
+function eatOne(player, entry, def, take) {
+  if (isFull(player)) { showMessage("You are full."); return false; }
+  if (!eat(player, def)) return false;
+  entry.count -= 1;
+  if (entry.count <= 0) take();
+  return true;
+}
+
 function beltPress(player, i) {
   const belt = beltOf(player);
   const e = belt && belt[i];
   const def = e && getItem(e.id);
   if (def && !def.hands && (def.kind === "food" || def.capacity)) {
     if (def.kind === "food") {
-      eat(player, def);
-      e.count -= 1;
-      if (e.count <= 0) belt[i] = null;
+      eatOne(player, e, def, () => { belt[i] = null; });
     } else if ((e.fill ?? 0) > 0) drink(player, e);
     else showMessage("It is empty.");
     return;
@@ -1072,7 +1080,7 @@ export function itemMenu(player, entry, bag, otherBag) {
     });
   }
   if (def.kind === "food") {
-    out.push({ label: "Eat", enabled: true, onSelect: () => { eat(player, def); entry.count -= 1; if (entry.count <= 0) grid.remove(bag, entry); } });
+    out.push({ label: "Eat", enabled: true, onSelect: () => { eatOne(player, entry, def, () => grid.remove(bag, entry)); } });
   }
   if (def.capacity) {
     const pct = Math.round(entry.fill ?? 0);
@@ -1152,7 +1160,15 @@ export function slotMenu(player, slotId) {
     const belt = beltOf(player);
     const entry = belt && belt[Number(key)];
     if (!entry) return out;
-    out.push({ label: "Equip", enabled: true, onSelect: () => equipFrom(player, entry) });
+    const bdef = getItem(entry.id);
+    // A food on the belt is eaten from it, and a skin drunk from it (Michael, 2026-10-18, #179: "being able to eat from your belt"): the
+    // slot's first entry, so a double-click does it; a hand item is equipped as before.
+    if (bdef.kind === "food") {
+      out.push({ label: "Eat", enabled: true, onSelect: () => { eatOne(player, entry, bdef, () => { belt[Number(key)] = null; }); } });
+    } else if (bdef.capacity) {
+      const pct = Math.round(entry.fill ?? 0);
+      out.push({ label: `Drink (${pct}%)`, enabled: pct > 0, onSelect: () => drink(player, entry) });
+    } else out.push({ label: "Equip", enabled: true, onSelect: () => equipFrom(player, entry) });
     out.push({
       label: "Put in bag",
       enabled: !!bagOf(player),

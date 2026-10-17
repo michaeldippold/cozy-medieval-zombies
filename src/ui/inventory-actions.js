@@ -175,7 +175,7 @@ export function createInventoryActions(getPlayer) {
     // Use mode never took anything off; the review of #66).
     useSlot(slotId) {
       const m = interact.slotMenu(getPlayer(), slotId);
-      const a = m.find((q) => q.label === "Unequip" || q.label.startsWith("Equip"));
+      const a = m.find((q) => q.label === "Unequip" || q.label.startsWith("Equip") || q.label === "Eat" || q.label.startsWith("Drink")); // a food on the belt is eaten by a double-click (#179)
       if (!a || a.enabled === false) return false;
       a.onSelect();
       return true;
@@ -257,7 +257,7 @@ export function createRemoteInventoryActions(getPlayer, getOpen, send) {
     },
     useSlot(slotId) {
       const m = local.slotMenu(slotId);
-      const a = m.find((q) => q.label === "Unequip" || q.label.startsWith("Equip")); // as the host's own (above)
+      const a = m.find((q) => q.label === "Unequip" || q.label.startsWith("Equip") || q.label === "Eat" || q.label.startsWith("Drink")); // as the host's own (above)
       if (!a || a.enabled === false) return false;
       send({ op: "menu", label: a.label, src: { kind: "slot", id: slotId } });
       return true;
