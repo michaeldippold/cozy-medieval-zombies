@@ -246,7 +246,7 @@ export function install() {
     const line = `Made ${out.prop ? out.prop.replace(/_/g, " ") : `${out.count > 1 ? `${out.count} ` : ""}${items.getItem(out.id).name.toLowerCase()}`}.`;
     for (const id of net.guestPlayerIds()) {
       const p = S.players.find((q) => q.id === id);
-      if (p && Math.hypot(tile[0] - p.gx, tile[1] - p.gy) <= 12) net.logTo(id, line, "result");
+      if (p && Math.hypot(tile[0] - p.gx, tile[1] - p.gy) <= tuning.world.craftDoneRadius) net.logTo(id, line, "result");
     }
   });
   // A container opened by a guest's player (the acting player, game.js): told to the guest.

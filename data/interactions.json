@@ -9,6 +9,7 @@
   {"use": "torch", "on": "torch", "verb": "Light", "action": "light", "message": "You light the torch."},
   {"use": "tinderbox", "on": "bracket", "verb": "Light", "action": "light", "message": "You light the torch."},
   {"use": "torch", "on": "bracket", "verb": "Light", "action": "light", "message": "You light the torch."},
+  {"use": "tinderbox", "on": "lantern_post", "verb": "Light", "action": "light"},
   {"use": "torch", "on": "lantern_post", "verb": "Light", "action": "light", "message": "You light the torch."},
   {"use": "torch", "on": "fire", "verb": "Light", "action": "light", "message": "You light the torch."},
   {"use": "arrow", "on": "fire", "verb": "Dip", "action": "dip", "args": {"from": "arrow", "to": "fire_arrow"}, "message": "You dip the arrows in the fire."},

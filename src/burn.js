@@ -109,6 +109,7 @@ function lightTarget(player, target, flame) {
   }
   const prop = typeof target.prop === "string" ? map.propById(target.prop) : target.prop;
   const f = prop && prop.fire;
+  if (prop && prop.sprite === "lantern_post") return { reason: "A lantern is always lit." }; // as a lantern in a bracket says
   if (!f || !(prop.sprite === "campfire" || f.holds)) return { reason: "That cannot be lit." }; // a campfire or a torch: not a hearth, an oven, or a forge
   if (prop.sprite === "campfire") {
     if (f.lit) return { reason: "It is already burning." };

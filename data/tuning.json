@@ -86,6 +86,8 @@
     "playerCapServer": 8,
     "torchHeldLife": 1440,
     "torchWallLife": 2880,
+    "fireOutRadius": 8,
+    "craftDoneRadius": 12,
     "torchSpentRadius": 12,
     "daylightTiles": 30,
     "fenceHp": 90,

@@ -259,7 +259,7 @@ export function entityDrawables(entities, visible, out, drawAll, me = null) {
       occluded: false,
       emit() {
         const world = [e.gx, e.gy];
-        if (e.swingTarget && fade >= 0.5) {
+        if (e.swingTarget && fade >= sightTuning.seenAt) {
           // The next swing would hit this one (docs/14): a one-pixel outline, eight copies of the
           // sprite flat green just behind it, unlit and unfogged so it reads at night.
           for (const [ox, oy] of SWING_OUTLINE_OFFSETS) {

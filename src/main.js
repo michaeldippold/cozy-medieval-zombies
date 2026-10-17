@@ -1622,13 +1622,13 @@ async function boot() {
       events.on("sleepStart", () => showMessage(game.everyoneAsleep() ? "You lie down. The night goes on without you." : "You lie down. Time will pass faster once everyone in the world is asleep.", 5));
       events.on("sleepEnd", ({ hours }) => showMessage(`${clock.getLabel()}. You slept ${hours} hours.`, 4));
       events.on("fireOut", ({ tile }) => {
-        if (Math.hypot(tile[0] - S.player.gx, tile[1] - S.player.gy) <= 8) showMessage("A fire has gone out.");
+        if (Math.hypot(tile[0] - S.player.gx, tile[1] - S.player.gy) <= tuning.world.fireOutRadius) showMessage("A fire has gone out.");
       });
       // A craft done and a weapon worn out (docs/30, sections 5.2 and 6): the line and the word for my own player
       // (a guest's reach it through the host, host.js).
       events.on("craftDone", ({ out, tile }) => {
         const line = `Made ${out.prop ? out.prop.replace(/_/g, " ") : `${out.count > 1 ? `${out.count} ` : ""}${items.getItem(out.id).name.toLowerCase()}`}.`;
-        if (Math.hypot(tile[0] - S.player.gx, tile[1] - S.player.gy) <= 12) log.push(line, "result");
+        if (Math.hypot(tile[0] - S.player.gx, tile[1] - S.player.gy) <= tuning.world.craftDoneRadius) log.push(line, "result");
       });
       events.on("torchSpent", ({ x, y }) => {
         if (Math.hypot(x - S.player.gx, y - S.player.gy) <= tuning.world.torchSpentRadius) log.push("A torch burns out.", "result"); // a guest's, host.js

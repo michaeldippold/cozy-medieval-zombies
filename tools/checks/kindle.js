@@ -70,6 +70,19 @@ export async function run(game) {
     G.teleport(cx + 1.8, cy - 2);
     use(taperP, { kind: "prop", prop: lpost });
     row("an unlit torch held to a lantern post is lit from it (and the post is lit still)", taperP.lit === true && lpost.fire.lit === true, `torch lit ${taperP.lit}, post lit ${lpost.fire.lit}`);
+    // A lantern post is always lit: a tinderbox or a lit torch on it says so (the word a lantern bracket uses), not "Nothing interesting
+    // happens" or "That cannot be lit".
+    {
+      const tp = { prop: lpost.id };
+      const withBox = run({ ...tp, entry: box.uid });
+      const litTorch = mk("torch", { lit: true, wear: 0 });
+      me.hands.main = litTorch;
+      const withTorch = run({ ...tp, entry: litTorch.uid });
+      me.hands.main = null;
+      row("a tinderbox or a lit torch on a lantern post says it is always lit", !withBox.ok && /always lit/.test(withBox.reason) && !withTorch.ok && /always lit/.test(withTorch.reason), `${withBox.reason} / ${withTorch.reason}`);
+      use(box, { kind: "prop", prop: lpost });
+      row("Use of the tinderbox on a lantern post says so too, not 'Nothing interesting happens'", /always lit/.test(await lastLine()), `"${await lastLine()}"`);
+    }
     me.hands.main = null;
 
     // Not a hearth, an oven, or a forge: only a campfire or a torch.
@@ -190,6 +203,10 @@ export async function run(game) {
       // By Use (#170): Use can target a bracket, and a lit torch in one is a flame like a post's.
       bracket.wall.bracket.lit = false;
       row("Use mode finds the bracket under the cursor", viaCursor(bracket) === bracket, `${viaCursor(bracket) ? "found" : "none"}`);
+      // The Use label names what hangs there (#177).
+      const names = await import("/src/interactions.js");
+      const lanternB = [...G.map.brackets()].find((b) => b.wall.bracket.lantern);
+      row("a Use on a bracket is labelled for what is there: the torch, the lantern, the empty bracket", names.nameOfTarget({ kind: "bracket", bracket }) === "the torch in the bracket" && (!lanternB || names.nameOfTarget({ kind: "bracket", bracket: lanternB }) === "the lantern"), `${names.nameOfTarget({ kind: "bracket", bracket })}${lanternB ? `, ${names.nameOfTarget({ kind: "bracket", bracket: lanternB })}` : ""}`);
       use(box, { kind: "bracket", bracket: viaCursor(bracket) });
       row("a tinderbox used on a mounted torch that is out lights it (Use targets a bracket)", bracket.wall.bracket.lit === true, `lit ${bracket.wall.bracket.lit}`);
       const taper2 = mk("torch", { lit: false, wear: 0 });
@@ -220,20 +237,29 @@ export async function run(game) {
       // A lantern is a flame (Michael, 2026-10-17, #175: "Sure why not."): an unlit torch held to it is lit from it; it stays lit and unchanged.
       const taperL = mk("torch", { lit: false, wear: 0 });
       me.hands.main = taperL;
+      const lanternRecord = JSON.stringify(lantern.wall.bracket); // the whole record, not one field of it
       use(taperL, { kind: "bracket", bracket: viaCursor(lantern) });
-      row("an unlit torch held to a lantern bracket is lit from it (and the lantern is as it was)", taperL.lit === true && lantern.wall.bracket.lantern === true && /at the lantern/.test(await lastLine()), `torch lit ${taperL.lit}; "${await lastLine()}"`);
+      row("an unlit torch held to a lantern bracket is lit from it (and the lantern is as it was)", taperL.lit === true && JSON.stringify(lantern.wall.bracket) === lanternRecord && /at the lantern/.test(await lastLine()), `torch lit ${taperL.lit}; "${await lastLine()}"`);
       me.hands.main = null;
+      // A guest's Use goes to the host as an address (inventory-actions.performUseCommand): the tinderbox in the bag by uid, the lantern by its edge.
+      if (!bag.items.includes(box)) G.inventory.stow(me, box);
+      const performUse = (await import("/src/ui/inventory-actions.js")).performUseCommand;
+      const byGuest = performUse(me, { uid: box.uid, src: { kind: "bag", bag: { mine: true } }, target: { kind: "bracket", tx: lantern.tx, ty: lantern.ty, edge: lantern.edge } });
+      row("a guest's Use of the tinderbox on the lantern, by address, says it is always lit and changes nothing", byGuest === true && /always lit/.test(await lastLine()) && JSON.stringify(lantern.wall.bracket) === lanternRecord, `ran ${byGuest}; "${await lastLine()}"`);
       // Not through a wall (the one rule): from the far side of the lantern's wall, if there is room on both sides.
-      const [nsx, nsy] = nearSide(lantern, -0.8);
-      if (G.map.isWalkableTile(Math.round(nsx), Math.round(nsy))) {
+      // A lantern with room on both sides of its wall, found as the torch bracket is below; none is a failure, not a skipped row.
+      const walledL = [...G.map.brackets()].find((b) => b.wall.bracket.lantern && [nearSide(b, 0.8), nearSide(b, -0.8)].every(([px, py]) => G.map.isWalkableTile(Math.round(px), Math.round(py))));
+      if (walledL) {
         const taperF = mk("torch", { lit: false, wear: 0 });
         me.hands.main = taperF;
-        G.teleport(nsx, nsy);
-        const behindL = run({ bracket: { tx: lantern.tx, ty: lantern.ty, edge: lantern.edge }, entry: taperF.uid });
+        const [fx, fy] = nearSide(walledL, -0.8);
+        G.teleport(fx, fy);
+        const behindL = run({ bracket: { tx: walledL.tx, ty: walledL.ty, edge: walledL.edge }, entry: taperF.uid });
         row("but not through the wall from its far side", !behindL.ok && /wall/.test(behindL.reason) && taperF.lit !== true, String(behindL.reason));
         me.hands.main = null;
-      }
+      } else row("a lantern bracket with room on both sides for the far-side row", false, "none in the loaded map");
     } else row("a lantern bracket for the always-lit row", false, "none in the loaded map (the lanterns are #164's)");
+
 
     // Not through a wall: a torch in a bracket from the far side of its wall, a campfire on the other side of one.
     const walled = [...G.map.brackets()].find((b) => {

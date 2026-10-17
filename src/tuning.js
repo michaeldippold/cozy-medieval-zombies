@@ -102,6 +102,8 @@ export const world = {
   playerCapServer: 8, // and a server world (raised in one line when the lighter frames of docs/31/05 land)
   torchHeldLife: 1440, // game seconds of burning a torch lasts held in a hand (two game days of continuous light; Michael, 2026-10-17, #156)
   torchWallLife: 2880, // and on the belt, in a bracket, or on a post, the slower "wall" rate
+  fireOutRadius: 8, // tiles within which a player is told a fire has gone out (main.js; #177)
+  craftDoneRadius: 12, // and within which a craft done is told (main.js, host.js; #177)
   torchSpentRadius: 12, // tiles within which a player is told a mounted torch burnt out (host.js, main.js; #167)
   daylightTiles: 30, // tiles of a room one open shutter or open door lights fully by day (light.js `openness`; Michael, #150): one open window for a small room, more for a large one
   fenceHp: 90, // the hit points of a fence: the dead strike it down, one alone slowly, a crowd faster (Michael, 2026-10-17, #147; 2026-10-18, #174); a gate has `fenceGateFactor` of it
