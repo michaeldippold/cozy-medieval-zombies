@@ -14,8 +14,8 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const { bootData } = await import("../server/boot.js");
-const [map, game, loop, interact, stations, save] = await Promise.all([
-  import("../src/map.js"), import("../src/game.js"), import("../src/loop.js"), import("../src/interact.js"), import("../src/stations.js"), import("../src/save.js"),
+const [map, game, loop, interact, stations, save, clock] = await Promise.all([
+  import("../src/map.js"), import("../src/game.js"), import("../src/loop.js"), import("../src/interact.js"), import("../src/stations.js"), import("../src/save.js"), import("../src/clock.js"),
 ]);
 await bootData(root);
 const json = JSON.parse(fs.readFileSync(path.join(root, "data/maps/valley.json"), "utf8"));
@@ -126,6 +126,12 @@ for (let cy = -2; cy < H + 2; cy++) for (let cx = -2; cx < W + 2; cx++) map.getC
 did("the wild grown again");
 map.touch(); did("the whole world touched");
 map.removeProp(bench); did("a prop removed");
+// A fruit tree picked bare (its sprite and the day it bears again change with no other mark), and bearing again on that day (fruit.js).
+const apple = map.allProps().find((q) => q.sprite === "tree_apple");
+if (!apple) fail("the valley has no apple tree");
+map.restage(apple, "tree_apple_bare", clock.getElapsed() + 2 * clock.DAY_LENGTH); did("a fruit tree picked bare");
+clock.setElapsed(clock.getElapsed() + 3 * clock.DAY_LENGTH); did("a fruit tree bearing again", 120);
+if (apple.sprite !== "tree_apple" || apple.regrowAt !== undefined) fail(`the apple tree did not bear again (${apple.sprite}, ${apple.regrowAt})`);
 // A torch burning down in a bracket: its wear changes every step and only the save's copy of the chunk hears (map.burnHolders).
 const mount = [...map.brackets()].find((b) => !b.wall.bracket.torch) || [...map.brackets()][0];
 if (!mount) fail("the valley has no bracket for a mounted torch");

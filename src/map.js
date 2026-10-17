@@ -515,6 +515,15 @@ export function placeProp(prop, tx, ty) {
   groundChanged(prop.tiles, prop);
 }
 
+// A prop turned into another kind in place (a fruit tree picked bare, or bearing again), with the day it will change next or null: the
+// sprite and `regrowAt` are saved with the prop, and the chunk goes to a guest (fruit.js).
+export function restage(prop, sprite, regrowAt) {
+  prop.sprite = sprite;
+  if (regrowAt === null || regrowAt === undefined) delete prop.regrowAt;
+  else prop.regrowAt = regrowAt;
+  touch(prop.tile[0], prop.tile[1]);
+}
+
 export function removeProp(prop) {
   for (const [tx, ty] of prop.tiles) {
     const t = tileAt(tx, ty);
@@ -1992,6 +2001,7 @@ export function loadMap(json, options = {}) {
   };
   const props = [];
   const placeProp = (def, offset) => {
+    if (noTrees && isTreeKind(def.sprite)) { ghostTrees.add(ghostKey(def.tile[0] + offset[0], def.tile[1] + offset[1])); return; } // Trees off: an authored tree (an orchard's) is not placed either, and the forage counts where it would have stood
     const prop = createProp(def, offset);
     props.push(prop);
     for (const [tx, ty] of prop.tiles) get(tx, ty).prop = prop;

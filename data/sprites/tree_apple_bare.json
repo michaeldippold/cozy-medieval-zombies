@@ -1,0 +1,1 @@
+{"placeholder": {"kind": "tree", "width": 50, "height": 60, "color": "#6aa04a", "trunk": "#5a3a22"}, "collide": {"radius": 0.18}, "wood": 2, "canopy": {"reach": 1}, "shadow": {"width": 0.4}, "leaves": "brown", "interactable": true, "ripens": "tree_apple", "note": "the apple tree, picked: no fruit until it bears again (fruit.js; #190)"}

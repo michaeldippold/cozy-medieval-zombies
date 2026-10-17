@@ -88,6 +88,8 @@
     "torchWallLife": 2880,
     "torchSpentRadius": 12,
     "daylightTiles": 30,
+    "fruitCheckSeconds": 30,
+    "pickReach": 1.6,
     "fenceHp": 90,
     "fenceGateFactor": 0.5
   },

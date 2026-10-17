@@ -1,5 +1,5 @@
 {
-  "version": "7adb09c3",
+  "version": "080553c7",
   "files": {
     "data/build.json": {"size": 366, "stamp": "d4f4a6d2"},
     "data/combat.json": {"size": 4109, "stamp": "4efa7ba3"},
@@ -11,7 +11,7 @@
     "data/loot.json": {"size": 1931, "stamp": "ed38169b"},
     "data/poses.json": {"size": 4867, "stamp": "53e6f192"},
     "data/recipes.json": {"size": 6494, "stamp": "ddf6aac7"},
-    "data/tuning.json": {"size": 2533, "stamp": "df010dc8"},
+    "data/tuning.json": {"size": 2584, "stamp": "03fc45bf"},
     "data/wardrobes.json": {"size": 8477, "stamp": "3320934b"},
     "data/art/character/character_body.json": {"size": 17235, "stamp": "2b1fcf24"},
     "data/art/character/character_template.json": {"size": 13333, "stamp": "9a0c05f7"},
@@ -383,7 +383,7 @@
     "data/layers/waist/index.json": {"size": 19, "stamp": "e924073b"},
     "data/maps/square.json": {"size": 12943, "stamp": "4e98b5aa"},
     "data/maps/staging.json": {"size": 8579, "stamp": "4d8afeff"},
-    "data/maps/valley.json": {"size": 70169, "stamp": "792c9a55"},
+    "data/maps/valley.json": {"size": 72380, "stamp": "d7babc17"},
     "data/site/staging_day_wide.webp": {"size": 103152, "stamp": "d59a0e45"},
     "data/site/staging_dusk_wide.webp": {"size": 60390, "stamp": "234b2082"},
     "data/sprites/altar.json": {"size": 197, "stamp": "1f7da4c7"},
@@ -473,6 +473,8 @@
     "data/sprites/stump.json": {"size": 198, "stamp": "25e9183e"},
     "data/sprites/table.json": {"size": 399, "stamp": "f82ad8f5"},
     "data/sprites/torch_post.json": {"size": 168, "stamp": "c0fb7413"},
+    "data/sprites/tree_apple.json": {"size": 465, "stamp": "9344d7b9"},
+    "data/sprites/tree_apple_bare.json": {"size": 338, "stamp": "1fcc2b55"},
     "data/sprites/tree_blue_l.json": {"size": 289, "stamp": "8a42a9ea"},
     "data/sprites/tree_blue_m.json": {"size": 286, "stamp": "a6138f33"},
     "data/sprites/tree_blue_old.json": {"size": 288, "stamp": "d84c333f"},

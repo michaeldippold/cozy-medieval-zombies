@@ -736,6 +736,24 @@ export function generateTree(ph) {
   ctx.fillStyle = shade(color, 1.18);
   ctx.fill();
 
+  // Fruit in the canopy (`fruit`: a colour; `fruitCount` of them, default 9): a fruit tree's laden kind. Each is a dark ring and a lit dot.
+  if (ph.fruit) {
+    for (let i = 0; i < (ph.fruitCount || 9); i++) {
+      const a = rnd() * Math.PI * 2;
+      const r = Math.sqrt(rnd()) * width * 0.36;
+      const fx = Math.round(cx + Math.cos(a) * r);
+      const fy = Math.round(canopyCy + Math.sin(a) * r * 0.9);
+      ctx.fillStyle = shade(ph.fruit, 0.55);
+      ctx.beginPath();
+      ctx.arc(fx, fy, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = ph.fruit;
+      ctx.beginPath();
+      ctx.arc(fx, fy, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
   return {
     image: canvas,
     frames: { idle_0: [0, 0, fw, fh] },

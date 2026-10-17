@@ -33,8 +33,9 @@ import { emit } from "./events.js";
 import * as loop from "./loop.js";
 import * as use from "./use.js"; // the Use entry on item menus (docs/30, law 2)
 import * as verbs from "./verbs.js"; // the verb table (docs/31/08, habit 4)
-import { world } from "./world.js";
+import * as fruit from "./fruit.js"; // fruit trees: picked by hand, bare until they bear again (#190)
 import * as clock from "./clock.js";
+import { world } from "./world.js";
 import * as sight from "./sight.js";
 import { tiredStage } from "./moodles.js";
 import * as stations from "./stations.js"; // what a prop is as a station (docs/30, section 6)
@@ -523,6 +524,33 @@ function openingActions(o, player) {
   return out;
 }
 
+// A fruit tree laden is picked by hand (the `pick` verb, fruit.js; #190); bare, it says when it will bear. The timed action runs the verb,
+// so a guest's choice of the same label does the same on the host.
+function pickActions(prop, player) {
+  const p = fruit.pickOf(prop);
+  const day = fruit.ripeAt(prop);
+  if (!p && day !== null) {
+    const days = Math.max(1, Math.ceil((day - clock.getElapsed()) / clock.DAY_LENGTH));
+    return [act({ kind: "pick", label: `Bare (fruit in about ${days} day${days > 1 ? "s" : ""})`, tiles: prop.tiles, mx: prop.tile[0], my: prop.tile[1], enabled: false })];
+  }
+  if (!p) return [];
+  const name = getItem(p.item).name.toLowerCase();
+  return [act({
+    kind: "pick",
+    simple: true,
+    label: `Pick ${name}s`,
+    tiles: prop.tiles,
+    mx: prop.tile[0],
+    my: prop.tile[1],
+    duration: p.seconds,
+    perform() {
+      const r = verbs.run("pick", world, player, { prop: prop.id });
+      if (!r.ok && r.reason) showMessage(r.reason);
+      return r.ok;
+    },
+  })];
+}
+
 // Trees: chop down, logs on the ground, the tree gone (docs/02: felling is clearing the tile's prop).
 function treeActions(prop) {
   return [act({
@@ -621,7 +649,7 @@ function propActions(prop, player) {
   if (prop.container) out.push(...containerActions(prop));
   if (prop.fire && prop.fire.burns) out.push(...fireActions(prop, player));
   if (prop.fire && prop.fire.holds) out.push(...holderActions({ kind: "post", prop }, player));
-  if (prop.wood) out.push(...treeActions(prop));
+  if (prop.wood) out.push(...pickActions(prop, player), ...treeActions(prop));
   if (prop.water) out.push(...wellActions(prop, player));
   if (getDef(prop.sprite).sleep) out.push(...sleepAction(prop, player));
   if (stations.stationOf(prop)) out.push(...stationActions(prop, player));

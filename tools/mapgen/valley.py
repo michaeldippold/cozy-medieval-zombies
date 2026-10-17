@@ -98,7 +98,7 @@ def part_n(x0, y, n, door_at=None, wall=None):
 
 
 # ---- the cottages (29/04, three plans so they do not repeat) ----
-def cottage_a(g, x, y, name, door_side="s", broken=False, torch=True):
+def cottage_a(g, x, y, name, door_side="s", broken=False, torch=True, apple=False):
     """Plan A, the two-room: a living room with the hearth, a bedroom. An 8 by 6 block."""
     s = g.place(name, [x, y, 8, 6])
     openings = [door("s", 1, broken=broken) if door_side == "s" else door("n", 1, broken=broken), window("s" if door_side == "n" else "n", 4), window("e", 1)]
@@ -113,6 +113,8 @@ def cottage_a(g, x, y, name, door_side="s", broken=False, torch=True):
         brackets=[{"side": "w", "at": 0, "facing": "in", **({"lantern": True} if torch else {"torch": False})}],
     )
     s.prop("woodpile", (7, 4))
+    if apple:
+        s.prop("tree_apple", (7, 5))  # a tree in the garden, reachable early (#190; Michael, 2026-10-18: apples are part of production)
     return s
 
 
@@ -377,11 +379,11 @@ def build():
                   brackets=[{"side": "w", "at": 3, "facing": "out", "lantern": True}])
 
     # ---- the cottages: two plans by the nobles' street, two by the green, four on the lane ----
-    cottage_a(g, *P(1, 23), "a cottage by the merchant's")
+    cottage_a(g, *P(1, 23), "a cottage by the merchant's", apple=True)
     cottage_b(g, *P(1, 27), "the cooper's long house")
-    cottage_a(g, *P(1, 47), "a cottage by the baker's", door_side="n")
+    cottage_a(g, *P(1, 47), "a cottage by the baker's", door_side="n", apple=True)
     cottage_c(g, *P(1, 52), "the chandler's house", trade="chandler")
-    cottage_a(g, *P(2, 65), "the first cottage on the lane", door_side="n", broken=True)   # the door kicked in
+    cottage_a(g, *P(2, 65), "the first cottage on the lane", door_side="n", broken=True, apple=True)   # the door kicked in
     cottage_b(g, *P(7, 65), "the second cottage on the lane")
     cottage_a(g, *P(12, 65), "the shut cottage", door_side="n", torch=False)             # a neighbour inside who will not open
     # The reeve's house at the row's end by the green: stone at the back, wood at the front.
@@ -391,6 +393,15 @@ def build():
                    partitions=[part_w(3, 0, 4, door_at=2)],
                    props=[hearth_w(0, 1), along_x("table", 1, 3), chair(1, 2, "s"), one("desk", 0, 3), along_x("bed", 3, 0), one("chest", 5, 3), one("bookcase", 3, 3)],
                    brackets=[{"side": "n", "at": 5, "facing": "in", "lantern": True}])
+
+    # ---- Hollow Farm's orchard (29/05, "the orchard"; #190): apple trees in staggered rows on grass, a barrel or two. The rest of the farm is step 4's. ----
+    orchard = g.place("the orchard", [38, 232, 16, 18])
+    for j in range(5):
+        for i in range(4):
+            x = 2 + 3 * i + (1 if j % 2 else 0)
+            orchard.prop("tree_apple", (x, 2 + 3 * j))
+    orchard.prop("barrel", (1, 16))
+    orchard.prop("barrel", (3, 16))
 
     # ---- reserves: the castle (step 5) and the farms (step 4) take no forest yet ----
     g.reserve([VX, VY, 64, 144])      # the village block, 29/04's plan

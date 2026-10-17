@@ -104,6 +104,8 @@ export const world = {
   torchWallLife: 2880, // and on the belt, in a bracket, or on a post, the slower "wall" rate
   torchSpentRadius: 12, // tiles within which a player is told a mounted torch burnt out (host.js, main.js; #167)
   daylightTiles: 30, // tiles of a room one open shutter or open door lights fully by day (light.js `openness`; Michael, #150): one open window for a small room, more for a large one
+  fruitCheckSeconds: 30, // clock seconds between looks at the bare fruit trees (a day is 720): a tree bears again on the first boundary after its day (fruit.js, #190)
+  pickReach: 1.6, // tiles from a fruit tree's trunk a picker may stand (#190)
   fenceHp: 90, // the hit points of a fence: the dead strike it down, one alone slowly, a crowd faster (Michael, 2026-10-17, #147; 2026-10-18, #174); a gate has `fenceGateFactor` of it
   fenceGateFactor: 0.5, // a gate goes first
 };
